@@ -1,0 +1,50 @@
+# python 
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+*.db
+*.egg-info/
+.env
+
+# airflow
+airflow/logs/
+airflow/dags/__pycache__/
+airflow/plugins/__pycache__/
+airflow/airflow.db
+airflow/unittests.cfg
+
+# dbt
+dbt_project/logs/
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/profiles/.user.yml
+
+# Docker 
+*.pid
+*.tar
+*.img
+*.log
+*.lock
+
+# Docker volumes mount
+loan_data/
+
+# Environment files
+.env
+
+# IDE / Editor
+# ========================
+.vscode/
+.idea/
+*.code-workspace
+
+# ========================
+# Windows System
+# ========================
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+ehthumbs.db

@@ -1,0 +1,17 @@
+name: "loan_dbt"
+version: "1.0.0"
+profile: "loan_profile"
+config-version: 2
+
+model-paths:
+  - models
+clean-targets:
+  - target
+
+models:
+  loan_dbt:
+    +materialized: table
+    staging:
+      +schema: stagings
+    marts:
+      +schema: analytics

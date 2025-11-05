@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: api
+    schema: raw
+    tables:
+      - name: api_loan_data
+
+  - name: sqlsrv
+    schema: raw
+    tables:
+      - name: sqlsrv_loan_data

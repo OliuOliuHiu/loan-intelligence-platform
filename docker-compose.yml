@@ -1,0 +1,100 @@
+x-airflow-common: &airflow-common
+  build:
+    context: ./airflow
+    dockerfile: Dockerfile
+  env_file: .env
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB_DW}
+    DW_CONN_URI: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB_DW}
+    SOURCE_API: ${SOURCE_API}
+    SQLSERVER_HOST: ${SQLSERVER_HOST}
+    SQLSERVER_DB: ${SQLSERVER_DB}
+    SQLSERVER_USER: ${SQLSERVER_USER}
+    SQLSERVER_PASSWORD: ${SQLSERVER_PASSWORD}
+    SQLSERVER_PORT: ${SQLSERVER_PORT}
+        # Email notification config
+    AIRFLOW__SMTP__SMTP_HOST: smtp.gmail.com
+    AIRFLOW__SMTP__SMTP_STARTTLS: 'True'
+    AIRFLOW__SMTP__SMTP_SSL: 'False'
+    AIRFLOW__SMTP__SMTP_USER: ${AIRFLOW__SMTP__SMTP_USER}
+    AIRFLOW__SMTP__SMTP_PASSWORD: ${AIRFLOW__SMTP__SMTP_PASSWORD}
+    AIRFLOW__SMTP__SMTP_PORT: '587'
+    AIRFLOW__SMTP__SMTP_MAIL_FROM: ${AIRFLOW__SMTP__SMTP_MAIL_FROM}
+
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./dbt_project:/opt/airflow/dbt_project
+  user: "${AIRFLOW_UID}:${AIRFLOW_GID}"
+  depends_on:
+    - postgres
+    - sqlserver
+
+services:
+  postgres:
+    image: postgres:16
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_DW}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: mssql_loan
+    environment:
+      SA_PASSWORD: "YourStrong!Pass"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "11433:1433"
+    volumes:
+      - ./backup:/var/opt/mssql/backup
+      - loan_data:/var/opt/mssql
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command: -c "airflow db init && airflow users create --username admin --password admin --firstname Hieu --lastname Oliu --role Admin --email hieuhd@example.com && echo 'Airflow initialized successfully'"
+    restart: "no"
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: bash -c "until airflow db check; do echo 'Waiting for Airflow DB to be ready...'; sleep 3; done; exec airflow webserver"
+    depends_on:
+      - postgres
+      - airflow-init
+    ports:
+      - "8080:8080"
+    restart: always
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: bash -c "until airflow db check; do echo 'Waiting for Airflow DB to be ready...'; sleep 3; done; exec airflow scheduler"
+    depends_on:
+      - postgres
+      - airflow-init
+    restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  pgdata:
+  loan_data:
+  pgadmin_data:

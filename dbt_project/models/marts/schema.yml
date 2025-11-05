@@ -1,0 +1,89 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: "Dimension lưu thông tin khách hàng"
+    columns:
+      - name: customer_sk
+        tests: [unique, not_null]
+      - name: customer_id
+        description: "Mã khách hàng gốc từ hệ thống nguồn"
+
+  - name: dim_creditgrade
+    description: "Dimension lưu phân loại tín dụng (grade, sub_grade)"
+    columns:
+      - name: creditgrade_sk
+        tests: [unique, not_null]
+
+  - name: dim_purpose
+    description: "Dimension lưu mục đích vay"
+    columns:
+      - name: purpose_sk
+        tests: [unique, not_null]
+
+  - name: dim_loanstatus
+    description: "Dimension lưu trạng thái khoản vay (kèm phân loại good/bad loan)"
+    columns:
+      - name: loanstatus_sk
+        tests: [unique, not_null]
+      - name: loan_status_category
+        description: "Good Loan / Bad Loan / Other"
+
+  - name: dim_term
+    description: "Dimension lưu kỳ hạn vay"
+    columns:
+      - name: term_sk
+        tests: [unique, not_null]
+
+  - name: dim_verification
+    description: "Dimension lưu trạng thái xác minh"
+    columns:
+      - name: verification_sk
+        tests: [unique, not_null]
+
+  - name: dim_location
+    description: "Dimension lưu địa chỉ (bang / state)"
+    columns:
+      - name: location_sk
+        tests: [unique, not_null]
+
+  - name: fact_loan
+    description: "Bảng fact trung tâm chứa dữ liệu các khoản vay, kết nối đến toàn bộ dimension"
+    columns:
+      - name: loan_id
+        tests: [unique, not_null]
+      - name: customer_sk
+        tests:
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_sk
+      - name: creditgrade_sk
+        tests:
+          - relationships:
+              to: ref('dim_creditgrade')
+              field: creditgrade_sk
+      - name: purpose_sk
+        tests:
+          - relationships:
+              to: ref('dim_purpose')
+              field: purpose_sk
+      - name: loanstatus_sk
+        tests:
+          - relationships:
+              to: ref('dim_loanstatus')
+              field: loanstatus_sk
+      - name: term_sk
+        tests:
+          - relationships:
+              to: ref('dim_term')
+              field: term_sk
+      - name: verification_sk
+        tests:
+          - relationships:
+              to: ref('dim_verification')
+              field: verification_sk
+      - name: location_sk
+        tests:
+          - relationships:
+              to: ref('dim_location')
+              field: location_sk
