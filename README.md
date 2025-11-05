@@ -1,167 +1,168 @@
-DATA_VISUALIZATION PROJECT
-Overview
+# 📊 DATA_VISUALIZATION PROJECT
 
-The Data Visualization Project is designed to extract, process, and visualize data from multiple sources such as SQL Server and REST APIs.
-The system follows an automated ELT (Extract – Load – Transform) process, orchestrated entirely by Apache Airflow, with dbt transformations triggered automatically inside the DAG.
+## 🧩 Overview
 
-All services are containerized and managed with Docker Compose, ensuring easy deployment and consistent environments.
+The **Data Visualization Project** is designed to extract, process, and visualize data from multiple sources such as **SQL Server** and **REST APIs**.
 
-Technologies Used
+It follows a fully automated **ELT (Extract – Load – Transform)** pipeline, orchestrated by **Apache Airflow**, with **dbt** transformations triggered directly within the DAG.
 
-Apache Airflow – Workflow orchestration and automation for ETL processes.
+All components are containerized and managed using **Docker Compose** for easy deployment and consistent environments.
 
-dbt (Data Build Tool) – Handles data transformations and model creation within the warehouse.
+---
 
-PostgreSQL – Acts as the data warehouse.
+## 🔧 Technologies Used
 
-pgAdmin – Client tool to monitor and query PostgreSQL.
+- **Apache Airflow** – Workflow orchestration and ETL automation  
+- **dbt (Data Build Tool)** – Data transformation & model building  
+- **PostgreSQL** – Data warehouse  
+- **pgAdmin** – UI tool to monitor/query PostgreSQL  
+- **SQL Server** – Raw data source (restored from `.bak`)  
+- **Docker Compose** – Container orchestration  
+- **`.env`** – Store all configuration variables and credentials  
 
-SQL Server – Source system containing the raw data backup.
+---
 
-Docker Compose – Used to spin up all components in a unified environment.
+## 📁 Project Structure
 
-.env file – Stores all configuration variables and credentials.
-
-Project Structure
+```
 DATA_VISUALIZATION/
-├── airflow/
-│   ├── config/                 # Airflow configuration files
-│   ├── dags/                   # DAG definitions for ETL workflows
-│   │   └── etl_multi_source.py # Main ETL DAG
-│   ├── logs/                   # Airflow logs
-│   ├── plugins/                # Custom Airflow plugins (if any)
-│   └── Dockerfile              # Dockerfile for the Airflow service
+├── airflow/                  # Airflow-related configs and DAGs
+│   ├── config/              # Airflow configuration files
+│   ├── dags/                # DAG definitions
+│   │   └── etl_multi_source.py
+│   ├── logs/                # Airflow logs
+│   ├── plugins/             # Optional custom plugins
+│   └── Dockerfile           # Airflow service image
 │
-├── backup/                     # Database backup files (e.g., loan_raw.bak)
+├── backup/                  # SQL Server backup files (.bak)
 │
 ├── dbt_project/
-│   ├── dbt_packages/           # dbt package dependencies
-│   ├── logs/                   # dbt logs
-│   ├── macros/                 # Custom dbt macros
-│   ├── models/                 # Data models
-│   │   ├── marts/              # Fact and dimension models
-│   │   └── staging/            # Staging (raw transformation) models
-│   ├── profiles/               # dbt connection profiles
+│   ├── dbt_packages/        # Package dependencies
+│   ├── logs/                # dbt logs
+│   ├── macros/              # Custom dbt macros
+│   ├── models/
+│   │   ├── marts/           # Fact/dimension models
+│   │   └── staging/         # Staging models
+│   ├── profiles/
 │   │   ├── .user.yml
 │   │   └── profiles.yml
-│   ├── target/                 # Compiled dbt artifacts
-│   ├── dbt_project.yml         # dbt project configuration
-│   └── package-lock.yml        # Optional dependency lock file
+│   ├── target/              # Compiled dbt artifacts
+│   ├── dbt_project.yml      # Project config
+│   └── package-lock.yml
 │
-├── .env                        # Environment variables
-├── .env.example                # Example environment variable template
-├── .gitignore                  # Ignored files for Git
-├── docker-compose.yml          # Docker Compose configuration
-└── README.md                   # This documentation file
+├── .env                     # Environment config (generated from .env.example)
+├── .env.example             # Template for environment variables
+├── .gitignore               # Files to ignore in Git
+├── docker-compose.yml       # Docker Compose configuration
+└── README.md                # This documentation file
+```
 
-Setup and Execution
-1. Clone the Repository
+---
+
+## ⚙️ Setup and Execution
+
+### 1. Clone the Repository
+
+```bash
 git clone https://github.com/<your-username>/loan-intelligence-platform.git
 cd data_visualization
+```
 
-2. Configure Environment Variables
+### 2. Configure Environment Variables
 
-Create the .env file from the example:
-
+```bash
 cp .env.example .env
+```
 
+> Then update `.env` with your own values (e.g., DB credentials, ports, etc.).
 
-Then update the values inside .env to match your system (database credentials, ports, etc.).
+### 3. Start the Docker Environment
 
-3. Start the Environment
-
-Run the following command to build and start all containers:
-
+```bash
 docker-compose up -d --build
+```
 
+> This spins up:
+> - Apache Airflow
+> - SQL Server (with backup restore)
+> - PostgreSQL
+> - pgAdmin
+> - dbt (triggered via Airflow)
 
-This will automatically set up:
+---
 
-Apache Airflow
+## 🗃️ Restoring SQL Server Database
 
-SQL Server
+After starting all containers:
 
-PostgreSQL
-
-pgAdmin
-
-dbt (integrated with Airflow)
-
-4. Restore the SQL Server Database
-
-Once all containers are running:
-
-Access the SQL Server container.
-
-Restore the backup file located in backup/loan_raw.bak:
-
+```sql
+-- Inside the SQL Server container:
 RESTORE DATABASE loan_raw 
 FROM DISK = '/var/opt/mssql/backup/loan_raw.bak' 
 WITH MOVE 'loan_raw' TO '/var/opt/mssql/data/loan_raw.mdf',
      MOVE 'loan_raw_log' TO '/var/opt/mssql/data/loan_raw.ldf',
      REPLACE;
+```
 
+> ✅ Ensure the database `loan_raw` is restored successfully.
 
-Verify that the database has been restored successfully.
+---
 
-5. Run the Automated ETL Pipeline in Airflow
+## 🚀 Run ETL Pipeline in Airflow
 
-Open Airflow Web UI at http://localhost:8080
-.
+1. Access Airflow: [http://localhost:8080](http://localhost:8080)  
+2. Log in using credentials in `.env`  
+3. Locate the DAG: `etl_multi_source`  
+4. **Unpause** and **Run** the DAG  
 
-Log in using the credentials defined in your .env file.
+🔁 The DAG will:
 
-In the DAGs tab, locate etl_multi_source.
+- Extract data from SQL Server & REST APIs  
+- Load raw data into PostgreSQL  
+- Trigger dbt to transform staging → fact/dim models  
 
-Unpause the DAG and click Run.
+You can monitor task runs in the Airflow UI.
 
-The DAG will automatically:
+---
 
-Extract data from SQL Server and REST APIs.
+## 🔍 Monitor Data in pgAdmin
 
-Load raw data into PostgreSQL.
+1. Access pgAdmin: [http://localhost:5050](http://localhost:5050)  
+2. Log in using PostgreSQL credentials  
+3. Browse schemas & tables to validate results
 
-Trigger dbt transformations to build fact and dimension tables automatically (no manual dbt run needed).
+---
 
-You can monitor the execution and logs directly in the Airflow UI.
+## 🔄 End-to-End Data Flow
 
-6. Monitor Data in PostgreSQL via pgAdmin
-
-Open pgAdmin at http://localhost:5050
-.
-
-Log in using your PostgreSQL credentials.
-
-Browse schemas, tables, and query data generated by the pipeline.
-
-End-to-End Data Flow
+```text
 SQL Server (loan_raw) + REST API
         │
         ▼
-  Apache Airflow DAG (etl_multi_source)
+Apache Airflow DAG (etl_multi_source)
         │
         ▼
-  PostgreSQL Data Warehouse
+PostgreSQL Data Warehouse
         │
         ▼
-  dbt (automatically triggered)
+dbt Transformations (auto-triggered)
         │
         ▼
-  Fact and Dimension Tables for Analytics
+Fact & Dimension Tables for Reporting
+```
 
-Expected Outcome
+---
 
-After running the pipeline:
+## ✅ Expected Outcome
 
-The raw data from SQL Server and REST APIs is automatically extracted and loaded into PostgreSQL.
+- Full automation from extraction to transformation  
+- No need to run `dbt run`, `dbt test`, etc. manually  
+- PostgreSQL becomes the final store for BI / analytics  
+- Easy-to-monitor pipeline with centralized orchestration
 
-The Airflow DAG triggers dbt, which builds fact and dimension tables automatically.
+---
 
-All transformed data is available in PostgreSQL for reporting, visualization, or further analytics through BI tools or pgAdmin.
+## 🪪 License
 
-No manual dbt commands (dbt run, dbt test, dbt docs) are required — the Airflow DAG handles everything end-to-end.
-
-License
-
-This project is licensed under the MIT License.
-You are free to use, modify, and distribute it for educational or professional purposes.
+Licensed under the **MIT License**.  
+Free to use, modify, and distribute for educational or professional purposes.
