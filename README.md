@@ -133,26 +133,6 @@ You can monitor task runs in the Airflow UI.
 
 ---
 
-## 🔄 End-to-End Data Flow
-
-```text
-SQL Server (loan_raw) + REST API
-        │
-        ▼
-Apache Airflow DAG (etl_multi_source)
-        │
-        ▼
-PostgreSQL Data Mart
-        │
-        ▼
-dbt Transformations (auto-triggered)
-        │
-        ▼
-Fact & Dimension Tables for Reporting
-```
-
----
-
 ## Data Pipeline Architecture
 
 Below is a high-level architecture of the ELT process and orchestration:
