@@ -1,4 +1,4 @@
-# 📊 DATA_VISUALIZATION PROJECT
+# DATA_VISUALIZATION PROJECT
 
 ## 🧩 Overview
 
@@ -22,7 +22,7 @@ All components are containerized and managed using **Docker Compose** for easy d
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 DATA_VISUALIZATION/
@@ -91,7 +91,7 @@ docker-compose up -d --build
 
 ---
 
-## 🗃️ Restoring SQL Server Database
+## Restoring SQL Server Database
 
 After starting all containers:
 
@@ -104,7 +104,7 @@ WITH MOVE 'loan_raw' TO '/var/opt/mssql/data/loan_raw.mdf',
      REPLACE;
 ```
 
-> ✅ Ensure the database `loan_raw` is restored successfully.
+> Ensure the database `loan_raw` is restored successfully.
 
 ---
 
@@ -125,7 +125,7 @@ You can monitor task runs in the Airflow UI.
 
 ---
 
-## 🔍 Monitor Data in pgAdmin
+##  Monitor Data in pgAdmin
 
 1. Access pgAdmin: [http://localhost:5050](http://localhost:5050)  
 2. Log in using PostgreSQL credentials  
@@ -133,7 +133,7 @@ You can monitor task runs in the Airflow UI.
 
 ---
 
-## 🔄 End-to-End Data Flow
+## End-to-End Data Flow
 
 ```text
 SQL Server (loan_raw) + REST API
@@ -153,7 +153,7 @@ Fact & Dimension Tables for Reporting
 
 ---
 
-## ✅ Expected Outcome
+## Expected Outcome
 
 - Full automation from extraction to transformation  
 - No need to run `dbt run`, `dbt test`, etc. manually  
