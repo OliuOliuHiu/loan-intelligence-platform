@@ -14,7 +14,7 @@ All components are containerized and managed using **Docker Compose** for easy d
 
 - **Apache Airflow** – Workflow orchestration and ETL automation  
 - **dbt (Data Build Tool)** – Data transformation & model building  
-- **PostgreSQL** – Data warehouse  
+- **PostgreSQL** – Data Mart  
 - **pgAdmin** – UI tool to monitor/query PostgreSQL  
 - **SQL Server** – Raw data source (restored from `.bak`)  
 - **Docker Compose** – Container orchestration  
@@ -125,7 +125,7 @@ You can monitor task runs in the Airflow UI.
 
 ---
 
-##  Monitor Data in pgAdmin
+## Monitor Data in pgAdmin
 
 1. Access pgAdmin: [http://localhost:5050](http://localhost:5050)  
 2. Log in using PostgreSQL credentials  
@@ -133,7 +133,7 @@ You can monitor task runs in the Airflow UI.
 
 ---
 
-## End-to-End Data Flow
+## 🔄 End-to-End Data Flow
 
 ```text
 SQL Server (loan_raw) + REST API
@@ -142,7 +142,7 @@ SQL Server (loan_raw) + REST API
 Apache Airflow DAG (etl_multi_source)
         │
         ▼
-PostgreSQL Data Warehouse
+PostgreSQL Data Mart
         │
         ▼
 dbt Transformations (auto-triggered)
@@ -150,6 +150,17 @@ dbt Transformations (auto-triggered)
         ▼
 Fact & Dimension Tables for Reporting
 ```
+
+---
+
+## Data Pipeline Architecture
+
+Below is a high-level architecture of the ELT process and orchestration:
+
+![Data Pipeline](pipelineE2E.png)
+
+> Extract from SQL Server and REST API → Load to PostgreSQL → Transform with dbt → Visualize in Power BI  
+> All orchestrated by Apache Airflow and containerized with Docker.
 
 ---
 
@@ -166,3 +177,5 @@ Fact & Dimension Tables for Reporting
 
 Licensed under the **MIT License**.  
 Free to use, modify, and distribute for educational or professional purposes.
+
+---
