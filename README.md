@@ -50,6 +50,10 @@ DATA_VISUALIZATION/
 │   ├── dbt_project.yml      # Project config
 │   └── package-lock.yml
 │
+├── dashboard_powerbi
+│   ├── preview image dashboard
+│   ├── loan_dashboard.pbix  # dashboard powerbi file
+│
 ├── .env                     # Environment config (generated from .env.example)
 ├── .env.example             # Template for environment variables
 ├── .gitignore               # Files to ignore in Git
