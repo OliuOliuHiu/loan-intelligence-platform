@@ -1,16 +1,16 @@
 # DATA_VISUALIZATION PROJECT
 
-## 🧩 Overview
+## Overview
 
-The **Data Visualization Project** is designed to extract, process, and visualize data from multiple sources such as **SQL Server** and **REST APIs**.
+The **Data Visualization Project** is designed to extract, process, and visualize data from multiple sources such as SQL Server and REST APIs.
 
-It follows a fully automated **ELT (Extract – Load – Transform)** pipeline, orchestrated by **Apache Airflow**, with **dbt** transformations triggered directly within the DAG.
+It follows a fully automated ELT (Extract – Load – Transform) pipeline, orchestrated by Apache Airflow, with dbt transformations triggered directly within the DAG.
 
-All components are containerized and managed using **Docker Compose** for easy deployment and consistent environments.
+All components are containerized and managed using Docker Compose for easy deployment and consistent environments.
 
 ---
 
-## 🔧 Technologies Used
+## Technologies Used
 
 - **Apache Airflow** – Workflow orchestration and ETL automation  
 - **dbt (Data Build Tool)** – Data transformation & model building  
@@ -19,6 +19,17 @@ All components are containerized and managed using **Docker Compose** for easy d
 - **SQL Server** – Raw data source (restored from `.bak`)  
 - **Docker Compose** – Container orchestration  
 - **`.env`** – Store all configuration variables and credentials  
+
+---
+
+## Data Pipeline Architecture
+
+Below is a high-level architecture of the ELT process and orchestration:
+
+![Data Pipeline](pipelineE2E.png)
+
+> Extract from SQL Server and REST API → Load to PostgreSQL → Transform with dbt → Visualize in Power BI  
+> All orchestrated by Apache Airflow and containerized with Docker.
 
 ---
 
@@ -63,7 +74,7 @@ DATA_VISUALIZATION/
 
 ---
 
-## ⚙️ Setup and Execution
+## Setup and Execution
 
 ### 1. Clone the Repository
 
@@ -112,14 +123,14 @@ WITH MOVE 'loan_raw' TO '/var/opt/mssql/data/loan_raw.mdf',
 
 ---
 
-## 🚀 Run ETL Pipeline in Airflow
+## Run ETL Pipeline in Airflow
 
 1. Access Airflow: [http://localhost:8080](http://localhost:8080)  
 2. Log in using credentials in `.env`  
 3. Locate the DAG: `etl_multi_source`  
 4. **Unpause** and **Run** the DAG  
 
-🔁 The DAG will:
+The DAG will:
 
 - Extract data from SQL Server & REST APIs  
 - Load raw data into PostgreSQL  
@@ -134,32 +145,5 @@ You can monitor task runs in the Airflow UI.
 1. Access pgAdmin: [http://localhost:5050](http://localhost:5050)  
 2. Log in using PostgreSQL credentials  
 3. Browse schemas & tables to validate results
-
----
-
-## Data Pipeline Architecture
-
-Below is a high-level architecture of the ELT process and orchestration:
-
-![Data Pipeline](pipelineE2E.png)
-
-> Extract from SQL Server and REST API → Load to PostgreSQL → Transform with dbt → Visualize in Power BI  
-> All orchestrated by Apache Airflow and containerized with Docker.
-
----
-
-## Expected Outcome
-
-- Full automation from extraction to transformation  
-- No need to run `dbt run`, `dbt test`, etc. manually  
-- PostgreSQL becomes the final store for BI / analytics  
-- Easy-to-monitor pipeline with centralized orchestration
-
----
-
-## 🪪 License
-
-Licensed under the **MIT License**.  
-Free to use, modify, and distribute for educational or professional purposes.
 
 ---
